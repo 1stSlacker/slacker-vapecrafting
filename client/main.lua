@@ -1,27 +1,6 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local craftingTableProp = nil  -- Variable to hold the prop reference
 
--- Function to create the table prop
-function CreateCraftingTable()
-    local model = Config.CraftingStation.prop
-    RequestModel(model)
-
-    while not HasModelLoaded(model) do
-        Wait(500)
-    end
-
-    if craftingTableProp then
-        DeleteEntity(craftingTableProp)  -- Delete the old prop if it exists
-    end
-
-    craftingTableProp = CreateObject(GetHashKey(model), Config.CraftingStation.coords.x, Config.CraftingStation.coords.y, Config.CraftingStation.coords.z - 1, false, true, true)
-    SetEntityHeading(craftingTableProp, Config.CraftingStation.coords.w)
-    PlaceObjectOnGroundProperly(craftingTableProp)
-
-    -- Freeze the prop so it doesn't move
-    FreezeEntityPosition(craftingTableProp, true)
-end
-
 -- Function to check if player has the required job
 function HasRequiredJob()
     local playerJob = QBCore.Functions.GetPlayerData().job.name
@@ -30,7 +9,6 @@ end
 
 -- Create the crafting table when the resource starts
 Citizen.CreateThread(function()
-    CreateCraftingTable()
 
     -- Setup Harvesting Areas
     for _, area in pairs(Config.HarvestAreas) do
@@ -178,8 +156,5 @@ end)
 
 -- Clean up on resource stop
 AddEventHandler('onResourceStop', function(resourceName)
-    if resourceName == GetCurrentResourceName() and craftingTableProp then
-        DeleteEntity(craftingTableProp)  -- Delete the crafting table prop
-        craftingTableProp = nil  -- Clear the reference
-    end
+   
 end)
